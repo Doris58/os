@@ -125,5 +125,75 @@ doris@doris-VirtualBox:~/os/lab1$ ls
 lab1.c  Makefile  readme.txt
 
 
+*************************************************************
+DODAN TEST ZA SIGTERM PA PONOVNO POKRETANJE PROGRAMA
+*************************************************************
+
+******* TERMINAL 1 *********
+
+doris@doris-VirtualBox:~/os/lab1$ make pokreni
+cc lab1.c -Wall -O -lm -o lab1
+Zadnji broj = 1 . Krećem s radom. PID = 3384 
+
+**********************************************
+NAKON NEKOLIKO SEKUNDI :
+**********************************************
+
+******* TERMINAL 2 *********
+
+doris@doris-VirtualBox:~$ kill -SIGTERM 3384
+
+**********************************************
+ODMAH :
+**********************************************
+
+******* TERMINAL 1 *********
+
+Primio signal SIGTERM. Pišem zadnji broj u status.txt i završavam s radom. 
+make: *** [Makefile:20: pokreni] Error 1
+doris@doris-VirtualBox:~/os/lab1$ cat obrada.txt
+1
+4
+9
+16
+25
+doris@doris-VirtualBox:~/os/lab1$ cat status.txt
+5
+doris@doris-VirtualBox:~/os/lab1$ make pokreni
+Zadnji broj = 5 . Krećem s radom. PID = 3466 
+
+**********************************************
+NAKON NEKOLIKO SEKUNDI :
+**********************************************
+
+******* TERMINAL 2 *********
+
+doris@doris-VirtualBox:~$ kill -SIGINT 3466
+
+**********************************************
+ODMAH :
+**********************************************
+
+******* TERMINAL 1 *********
+
+make: *** [Makefile:20: pokreni] Interrupt
+doris@doris-VirtualBox:~/os/lab1$ cat obrada.txt
+1
+4
+9
+16
+25
+36
+49
+64
+doris@doris-VirtualBox:~/os/lab1$ cat status.txt
+0
+doris@doris-VirtualBox:~/os/lab1$ make obrisi
+rm -rf lab1 status.txt obrada.txt
+doris@doris-VirtualBox:~/os/lab1$ ls
+lab1.c  Makefile  readme.txt
+
+
+
 
 
