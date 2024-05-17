@@ -5,43 +5,44 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include "signali.h"
+#include "datoteke.h"
 
-void postavi_signale() 
+void postavi_signale()
 {
     struct sigaction act;
 
-	/* maskiranje signala SIGUSR1 */
-	act.sa_handler = obradi_dogadaj;
+    /* maskiranje signala SIGUSR1 */
+    act.sa_handler = obradi_dogadaj;
 
-	sigemptyset(&act.sa_mask);
-	sigaddset(&act.sa_mask, SIGTERM);
+    sigemptyset(&act.sa_mask);
+    sigaddset(&act.sa_mask, SIGTERM);
 
-	act.sa_flags = 0; 
+    act.sa_flags = 0;
 
-	sigaction(SIGUSR1, &act, NULL);
+    sigaction(SIGUSR1, &act, NULL);
 
-	/* maskiranje signala SIGTERM */
-	act.sa_handler = obradi_sigterm;
+    /* maskiranje signala SIGTERM */
+    act.sa_handler = obradi_sigterm;
 
-	sigemptyset(&act.sa_mask);
+    sigemptyset(&act.sa_mask);
 
-	sigaction(SIGTERM, &act, NULL);
+    sigaction(SIGTERM, &act, NULL);
 }
 
 void obradi_dogadaj(int sig)
 {
-	printf("Signal SIGUSR1.\n");
-	
-    printf("Trenutni broj koji se koristi u obradi = %d\n", broj);
+    printf("Signal SIGUSR1.\n");
+
+    printf("Trenutni broj koji se koristi u obradi = %d . Nastavljamo dalje. \n", broj);
 }
 
 void obradi_sigterm(int sig)
 {
-	printf("Primio signal SIGTERM. Pišem zadnji broj u status.txt i završavam s radom. \n");
+    printf("Primio signal SIGTERM. Pišem zadnji broj u status.txt. \n Dretva koja obrađuje brojeve završava s radom. \n");
 
     zapisi_status(broj);
 
-    exit(1);
+    nije_kraj_obrade = 0;
 }
 
 // void obradi_sigint(int sig) {}

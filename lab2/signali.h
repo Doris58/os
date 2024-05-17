@@ -1,8 +1,8 @@
 /* Zaglavlje za sučelja s operacijama nad signalima */
 
-#pragma once 
+#pragma once
 
-extern int broj, nije_kraj;
+extern int broj, nije_kraj, nije_kraj_obrade;
 
 /* funkcije za obradu signala */
 void postavi_signale();

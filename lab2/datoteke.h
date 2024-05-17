@@ -1,6 +1,6 @@
 /* Zaglavlje za sučelja s operacijama nad datotekama */
 
-#pragma once  
+#pragma once
 
 extern char *dat_status, *dat_obrada, *dat_mreza;
 
