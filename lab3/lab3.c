@@ -39,7 +39,7 @@ void *kontrola_broja_dretvi(void *p)
 
 	int x;
 
-	while (1)
+	while (nije_kraj_obrade)
 	{
 		srand(time(0));
 		x = 1 + (rand() % 10);
@@ -53,10 +53,7 @@ void *kontrola_broja_dretvi(void *p)
 
 			postavljeni_broj_dretvi = x;
 
-
-			// while (broj_dretvi < postavljeni_broj_dretvi)
-			//{
-			//  stvori_novu_dretvu(obrada)
+			printf("Želim da bude %d radnih dretvi.\n\n", postavljeni_broj_dretvi);
 
 			for (int i = BROJ_DODATNIH_DRETVI - 1; broj_dretvi < postavljeni_broj_dretvi && i < BROJ_DODATNIH_DRETVI + MAX_RADNIH_DRETVI - 1; i++)
 			{
@@ -71,18 +68,16 @@ void *kontrola_broja_dretvi(void *p)
 					}
 
 					broj_dretvi++;
-
-					// break;
 				}
 			}
 
-			//printf("Želim da bude %d radnih dretvi.\n\n", postavljeni_broj_dretvi);
-
 			pthread_mutex_unlock(&m);
-
-			//}
 		}
+
+		sleep(5);
 	}
+
+	return NULL;
 }
 
 int main(int argc, char *argv[])
@@ -123,7 +118,7 @@ int main(int argc, char *argv[])
 	{
 		id[i] = i;
 
-		if (i == 2)
+		if (i == BROJ_DODATNIH_DRETVI -1)   //if(i == 2)
 			fun_ptr = &obrada;
 
 		if (i == 1)
@@ -139,7 +134,7 @@ int main(int argc, char *argv[])
 		}
 	}
 
-	printf("ŽELJENI BROJ ZA OBRADU MOŽETE UPISATI U OVU KONZOLU! \n\n");
+	printf("ŽELJENI BROJ ZA OBRADU MOŽETE UPISIVATI U OVU KONZOLU! \n\n");
 	while (nije_kraj)
 	{
 		// procitaj broj iz konzole, npr. sa scanf
@@ -150,7 +145,6 @@ int main(int argc, char *argv[])
 		{
 			pthread_mutex_lock(&m);
 
-			printf("Broj učitan iz konzole: %d \n\n", ucitani);
 			broj = ucitani;
 
 			pthread_mutex_unlock(&m);
@@ -176,32 +170,6 @@ void *obrada(void *p)
 {
 	pthread_mutex_lock(&m);
 
-	if (broj_dretvi > postavljeni_broj_dretvi)
-	{
-		printf("Dretva %d  koja radi obradu brojeva prestaje s radom. \n\n", *((int*) p));
-		*((int*) p) = 0; 
-		broj_dretvi--;
-
-		pthread_mutex_unlock(&m);
-
-		return NULL; // ili pthread_exit
-	}
-
-	printf("Dretva %d  koja radi obradu brojeva je počela s radom. \n\n", *((int*) p));
-	/* vise-manje glavni dio iz lab1 */
-	broj = procitaj_status();
-	if (broj == 0)
-	{
-		printf("Dretva %d traži zadnji obrađeni broj u datoteci. \n", *((int*) p));
-		broj = pronadi_zadnji_broj();
-
-		broj = (int)sqrt(broj);
-	}
-
-	zapisi_status(0);
-
-	printf("Dretva %d kaže: Zadnji broj = %d . Krećemo s tim brojem.\n\n", *((int*) p), broj);
-
 	int x;
 	while (nije_kraj_obrade)
 	{
@@ -216,8 +184,25 @@ void *obrada(void *p)
 			return NULL; // ili pthread_exit
 		}
 
-		broj = broj + 1;
+		//printf("Dretva %d  koja radi obradu brojeva je počela s radom. \n\n", *((int*) p));
+		/* vise-manje glavni dio iz lab1 */
+		//broj = procitaj_status();
+		if (procitaj_status() == 0)
+		{
+			printf("Dretva %d traži zadnji obrađeni broj u datoteci. \n", *((int*) p));
+			broj = pronadi_zadnji_broj();
+
+			broj = (int)sqrt(broj);
+
+			printf("Dretva %d: zadnji broj = %d . Krećem s radom.\n", *((int*) p), broj);
+
+			broj = broj + 1;
+
+			zapisi_status(broj);
+		}
+
 		x = broj * broj;
+		broj = broj + 1;
 
 		pthread_mutex_unlock(&m);
 
@@ -244,16 +229,18 @@ void *mreza(void *p)
 		while (procitani == -1)
 			procitani = dohvati_iz_cijevi();
 
-		printf("Broj pročitan iz cijevi: %d .\n", procitani);
-
-		pthread_mutex_lock(&m);
-
 		if (procitani > 0)
+		{
+			pthread_mutex_lock(&m);
+
+			printf("Broj pročitan iz cijevi: %d .\n", procitani);
 			broj = procitani;
 
-		pthread_mutex_unlock(&m);
+			pthread_mutex_unlock(&m);
+		}
 
 		procitani = -1;
+
 	}
 
 	return NULL;

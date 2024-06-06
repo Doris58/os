@@ -38,7 +38,7 @@ void obradi_dogadaj(int sig)
 
 void obradi_sigterm(int sig)
 {
-    printf("Primio signal SIGTERM. Pišem zadnji broj u status.txt. \n Dretva koja obrađuje brojeve završava s radom. \n");
+    printf("Primio signal SIGTERM. Pišem zadnji broj u status.txt. \n Dretve koje obrađuju brojeve završavaju s radom. \n");
 
     zapisi_status(broj);
 
