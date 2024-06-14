@@ -32,7 +32,7 @@ int main() {
 			/* citaj dio datoteke i ispisi ga, dok procitaj vrati nesto */
 			while(procitaj(fd, tekst, TEXT))
 			{
-				printf(tekst);
+				printf("%s", tekst);
 			}
 			zatvori_datoteku(fd);
 		}

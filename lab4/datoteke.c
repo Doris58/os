@@ -3,6 +3,21 @@
 #include "datoteke.h"
 #include "disk.h"
 
+#define min2(a, b)               \
+	({                          \
+		__typeof__(a) _a = (a); \
+		__typeof__(b) _b = (b); \
+		_a < _b ? _a : _b;      \
+	})
+
+#define min3(a, b, c)                                         \
+	({                                                       \
+		__typeof__(a) _a = (a);                              \
+		__typeof__(b) _b = (b);                              \
+		__typeof__(c) _c = (c);                              \
+		(_a < _b ? _a : _b) < _c ? (_a < _b ? _a : _b) : _c; \
+	})
+
 //neka u simulaciji (radi jednostavnosti) datotečna tablica bude u memoriji
 static struct opisnik datotecna_tablica[MAX_DATOTEKA];
 
@@ -99,7 +114,7 @@ int procitaj(int id, void *p, size_t koliko)
 
 		//kopiraj u p od datotecna_tablica[id].kazaljka do koliko ili do
 		//kraja bloka ili do datotecna_tablica[id].velicina, što prije dođe
-		kopirati = min(jos, dat.velicina - dat.kazaljka, BLOCK_SIZE - dat.kazaljka % BLOCK_SIZE);
+		kopirati = min3(jos, dat.velicina - dat.kazaljka, BLOCK_SIZE - dat.kazaljka % BLOCK_SIZE);
 
 		// kopiraj kopirati bajtova iz buffer + dat.kazaljka % VEL_BLOKA u p
 		memcpy(p, buffer + dat.kazaljka % BLOCK_SIZE, kopirati);
@@ -150,7 +165,7 @@ int zapisi(int id, void *p, size_t koliko)
 			dohvati_blok(blok_diska, buffer);
 		}
 
-		kopirati = min(jos, BLOCK_SIZE - dat.kazaljka % BLOCK_SIZE);
+		kopirati = min2(jos, BLOCK_SIZE - dat.kazaljka % BLOCK_SIZE);
 
 		//kopiraj kopirati bajtova iz p u buffer + dat.kazaljka % VEL_BLOKA
 		//kopiraj iz p u buffer+datotecna_tablica[id].kazaljka 'koliko' bajtova
